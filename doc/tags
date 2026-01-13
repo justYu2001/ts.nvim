@@ -1,0 +1,5 @@
+Ts.disable()	ts.txt	/*Ts.disable()*
+Ts.enable()	ts.txt	/*Ts.enable()*
+Ts.options	ts.txt	/*Ts.options*
+Ts.setup()	ts.txt	/*Ts.setup()*
+Ts.toggle()	ts.txt	/*Ts.toggle()*
