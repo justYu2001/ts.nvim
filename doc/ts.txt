@@ -1,0 +1,44 @@
+                                                                   *Ts.toggle()*
+                                 `Ts.toggle`()
+Toggle the plugin by calling the `enable`/`disable` methods respectively.
+
+------------------------------------------------------------------------------
+                                                                   *Ts.enable()*
+                              `Ts.enable`({scope})
+Initializes the plugin, sets event listeners and internal state.
+
+------------------------------------------------------------------------------
+                                                                  *Ts.disable()*
+                                 `Ts.disable`()
+Disables the plugin, clear highlight groups and autocmds, closes side buffers and resets the internal state.
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                    *Ts.options*
+                                  `Ts.options`
+Ts configuration with its default values.
+
+Type ~
+`(table)`
+Default values:
+>lua
+  Ts.options = {
+      -- Prints useful logs about what event are triggered, and reasons actions are executed.
+      debug = false,
+  }
+
+<
+------------------------------------------------------------------------------
+                                                                    *Ts.setup()*
+                             `Ts.setup`({options})
+Define your ts setup.
+
+Parameters ~
+{options} `(table)` Module config table. See |Ts.options|.
+
+Usage ~
+`require("ts").setup()` (add `{}` with your |Ts.options| table)
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
