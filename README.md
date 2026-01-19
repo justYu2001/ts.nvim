@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    > A catch phrase that describes your plugin.
+    TypeScript developer tooling for Neovim with intelligent auto-completion for utility types.
 </p>
 
 <div align="center">
@@ -20,11 +20,11 @@ _[GIF version of the showcase video for mobile users](SHOWCASE_GIF_LINK)_
 
 ## ⚡️ Features
 
-> Write short sentences describing your plugin features
-
-- FEATURE 1
-- FEATURE ..
-- FEATURE N
+- **Smart Auto-Completion for Utility Types**: Get intelligent suggestions when using `Omit`, `Exclude`, and `Extract`
+- **Context-Aware**: Automatically detects when you're editing utility type parameters
+- **LSP-Powered**: Leverages TypeScript LSP for accurate type information
+- **Intelligent Caching**: Reduces LSP overhead with smart caching and invalidation
+- **blink.cmp Integration**: Seamless integration with modern completion frameworks
 
 ## 📋 Installation
 
@@ -80,10 +80,18 @@ Plug "ts.nvim"
 <td>
 
 ```lua
--- stable version
-require("lazy").setup({{"ts.nvim", version = "*"}})
--- dev version
-require("lazy").setup({"ts.nvim"})
+return {
+  {
+    "saghen/blink.cmp",
+    opts = function(_, opts)
+      return require("ts.integrations.blink").merge_opts(opts)
+    end,
+  },
+  {
+    "ts.nvim",
+    version = "*"
+  },
+}
 ```
 
 </td>
@@ -91,10 +99,6 @@ require("lazy").setup({"ts.nvim"})
 </tbody>
 </table>
 </div>
-
-## ☄ Getting started
-
-> Describe how to use the plugin the simplest way
 
 ## ⚙ Configuration
 
@@ -107,7 +111,17 @@ require("lazy").setup({"ts.nvim"})
 
 ```lua
 require("ts").setup({
-    -- you can copy the full list from lua/ts/config.lua
+    -- Prints useful logs about what events are triggered
+    debug = false,
+
+    -- Auto-completion settings for TypeScript utility types
+    auto_completion = {
+        -- Cache time-to-live in milliseconds (default: 5000)
+        cache_ttl = 5000,
+
+        -- Maximum number of completion items to show for large types (default: 100)
+        max_items = 100,
+    },
 })
 ```
 
@@ -117,7 +131,8 @@ require("ts").setup({
 
 |   Command   |         Description        |
 |-------------|----------------------------|
-|  `:Toggle`  |     Enables the plugin.    |
+|  `:Ts`      |  Toggles the plugin on/off |
+
 
 ## ⌨ Contributing
 

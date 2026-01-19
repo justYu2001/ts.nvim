@@ -19,16 +19,25 @@ function Ts.enable(scope)
     end
 
     main.toggle(scope or "public_api_enable")
+
+    local auto_completion = require("ts.auto-completion")
+    auto_completion.enable()
 end
 
 --- Disables the plugin, clear highlight groups and autocmds, closes side buffers and resets the internal state.
 function Ts.disable()
+    local auto_completion = require("ts.auto-completion")
+    auto_completion.disable()
+
     main.toggle("public_api_disable")
 end
 
 -- setup Ts options and merge them with user provided ones.
 function Ts.setup(opts)
     _G.Ts.config = config.setup(opts)
+
+    local auto_completion = require("ts.auto-completion")
+    auto_completion.setup(_G.Ts.config)
 end
 
 _G.Ts = Ts

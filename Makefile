@@ -1,10 +1,12 @@
 .SUFFIXES:
+.PHONY: all test deps lint
 
 all: documentation lint luals test
 
 # runs all the test files.
 test:
 	make deps
+	make install-parsers
 	nvim --version | head -n 1 && echo ''
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua \
 		-c "lua require('mini.test').setup()" \
@@ -23,7 +25,14 @@ test-0.8.3:
 # installs `mini.nvim`, used for both the tests and documentation.
 deps:
 	@mkdir -p deps
-	git clone --depth 1 https://github.com/echasnovski/mini.nvim deps/mini.nvim
+	@[ -d deps/mini.nvim ] || git clone --depth 1 https://github.com/echasnovski/mini.nvim deps/mini.nvim
+	@[ -d deps/nvim-treesitter ] || git clone --depth 1 https://github.com/nvim-treesitter/nvim-treesitter deps/nvim-treesitter
+
+# installs tree-sitter parsers
+install-parsers:
+	nvim --headless --noplugin -u ./scripts/minimal_init.lua \
+		-c "lua require('nvim-treesitter.install').install({'typescript'}):wait(60000)" \
+		-c "qa!"
 
 # installs deps before running tests, useful for the CI.
 test-ci: deps test

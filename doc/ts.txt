@@ -26,6 +26,15 @@ Default values:
   Ts.options = {
       -- Prints useful logs about what event are triggered, and reasons actions are executed.
       debug = false,
+
+      -- Auto-completion settings for TypeScript utility types
+      auto_completion = {
+          -- Cache time-to-live in milliseconds
+          cache_ttl = 5000,
+
+          -- Maximum number of completion items to show (for large types)
+          max_items = 100,
+      },
   }
 
 <
@@ -39,6 +48,271 @@ Parameters ~
 
 Usage ~
 `require("ts").setup()` (add `{}` with your |Ts.options| table)
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                     *M.enabled*
+                                  `M.enabled`
+Module state
+
+------------------------------------------------------------------------------
+                                                                 *has_blink_cmp*
+                                `has_blink_cmp`
+Cached blink.cmp detection
+
+------------------------------------------------------------------------------
+                                                                     *M.setup()*
+                              `M.setup`({config})
+Parameters ~
+{config} `(table|nil)` Plugin configuration
+
+------------------------------------------------------------------------------
+                                                                *M.get_source()*
+                                `M.get_source`()
+Return ~
+`(table|nil)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                       *M.new()*
+                                   `M.new`()
+Create a new blink.cmp source instance
+Return ~
+`(table)` Source instance
+
+
+==============================================================================
+------------------------------------------------------------------------------
+Class ~
+{TSNode}
+Fields ~
+{type} `(fun(self: TSNode): string)`
+{parent} `(fun(self: TSNode): TSNode|nil)`
+{child} `(fun(self: TSNode, index: number): TSNode|nil)`
+{field} `(fun(self: TSNode, name: string): TSNode[])`
+{iter_children} `(fun(self: TSNode): fun():)` TSNode
+{range} `(fun(self: TSNode): number,)` number, number, number
+
+------------------------------------------------------------------------------
+                                                               *get_node_text()*
+                        `get_node_text`({node}, {bufnr})
+Parameters ~
+{node} `(TSNode)`
+{bufnr} `(number)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                                                   *has_value()*
+                         `has_value`({table}, {value})
+Parameters ~
+{table} `(table)`
+{value} `(any)`
+Return ~
+`(boolean)`
+
+------------------------------------------------------------------------------
+                                                      *find_generic_type_node()*
+                        `find_generic_type_node`({node})
+Find the generic_type node by walking up the tree
+Parameters ~
+{node} `(TSNode|nil)`
+Return ~
+`(TSNode|nil)`
+
+------------------------------------------------------------------------------
+                                                       *get_utility_type_name()*
+                `get_utility_type_name`({generic_node}, {bufnr})
+Parameters ~
+{generic_node} `(TSNode)`
+{bufnr} `(number)`
+Return ~
+`(string|nil)`
+
+------------------------------------------------------------------------------
+                                                          *get_type_arguments()*
+                      `get_type_arguments`({generic_node})
+Parameters ~
+{generic_node} `(TSNode)`
+Return ~
+`(TSNode|nil)`
+
+------------------------------------------------------------------------------
+                                                          *get_parameter_info()*
+  `get_parameter_info`({type_args_node}, {cursor_row}, {cursor_col}, {bufnr})
+Parameters ~
+{type_args_node} `(TSNode)`
+{cursor_row} `(number)` (0-indexed)
+{cursor_col} `(number)` (0-indexed)
+{bufnr} `(number)`
+Return ~
+`(number|nil)` # parameter index (1 or 2)
+Return ~
+`(string|nil)` # first_param_type
+
+------------------------------------------------------------------------------
+                                                               *M.get_context()*
+                            `M.get_context`({bufnr})
+Get the current completion context
+Parameters ~
+{bufnr} `(number|nil)` Buffer number (default: current buffer)
+Return ~
+`(table|nil)` Context information or nil if not in a valid context
+ {
+   is_utility_type: boolean,
+   utility_type_name: string|nil,
+   parameter_index: number|nil,
+   first_param_type: string|nil,
+ }
+
+------------------------------------------------------------------------------
+                                                        *M.is_in_second_param()*
+                        `M.is_in_second_param`({bufnr})
+Parameters ~
+{bufnr} `(number|nil)` Buffer number (default: current buffer)
+Return ~
+`(boolean)`
+
+------------------------------------------------------------------------------
+                                                      *M.get_first_param_type()*
+                       `M.get_first_param_type`({bufnr})
+Parameters ~
+{bufnr} `(number|nil)` Buffer number (default: current buffer)
+Return ~
+`(string|nil)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                         *Cache*
+                                    `Cache`
+LRU Cache implementation
+Class ~
+{Cache}
+Fields ~
+{max_size} `(number)`
+{ttl} `(number)` Time-to-live in milliseconds
+{data} `(table)`
+{timestamps} `(table)`
+{access_order} `(table)`
+
+------------------------------------------------------------------------------
+                                                                   *Cache.new()*
+                         `Cache.new`({max_size}, {ttl})
+Parameters ~
+{max_size} `(number)`
+{ttl} `(number)`
+Return ~
+`(Cache)`
+
+------------------------------------------------------------------------------
+                                                                   *Cache:get()*
+                               `Cache:get`({key})
+Parameters ~
+{key} `(string)`
+Return ~
+`(any|nil)`
+
+------------------------------------------------------------------------------
+                                                                   *Cache:set()*
+                          `Cache:set`({key}, {value})
+Parameters ~
+{key} `(string)`
+{value} `(any)`
+
+------------------------------------------------------------------------------
+                                                                *Cache:delete()*
+                             `Cache:delete`({key})
+Parameters ~
+{key} `(string)`
+
+------------------------------------------------------------------------------
+                                                          *Cache:clear_buffer()*
+                         `Cache:clear_buffer`({bufnr})
+Parameters ~
+{bufnr} `(number|nil)`
+
+------------------------------------------------------------------------------
+                                                                       *M.cache*
+                                   `M.cache`
+Global cache instance
+
+------------------------------------------------------------------------------
+                                                                *M.init_cache()*
+                            `M.init_cache`({config})
+Initialize the cache
+Parameters ~
+{config} `(table)`
+
+------------------------------------------------------------------------------
+                                                          *get_ts_lsp_clients()*
+                         `get_ts_lsp_clients`({bufnr})
+Get LSP clients for a buffer
+Parameters ~
+{bufnr} `(number)`
+Return ~
+`(table)`
+
+------------------------------------------------------------------------------
+                                                      *parse_union_from_hover()*
+                    `parse_union_from_hover`({hover_result})
+Parameters ~
+{hover_result} `(table|nil)`
+Return ~
+`(string[]|nil)`
+
+------------------------------------------------------------------------------
+                                               *parse_properties_from_symbols()*
+            `parse_properties_from_symbols`({symbols}, {max_items})
+Parameters ~
+{symbols} `(table|nil)`
+{max_items} `(number)`
+Return ~
+`(table[])` Array of {name, type, documentation}
+
+------------------------------------------------------------------------------
+                                                     *M.extract_union_members()*
+          `M.extract_union_members`({type_name}, {bufnr}, {callback})
+Parameters ~
+{type_name} `(string)`
+{bufnr} `(number)`
+{callback} `(function)`(string[]|nil)
+
+------------------------------------------------------------------------------
+                                                        *M.extract_properties()*
+     `M.extract_properties`({type_name}, {bufnr}, {callback}, {max_items})
+Extract properties from an interface/type using definition + documentSymbol
+Parameters ~
+{type_name} `(string)`
+{bufnr} `(number)`
+{callback} `(function)`(table[]|nil)
+{max_items} `(number)`
+
+------------------------------------------------------------------------------
+                                                               *M.clear_cache()*
+                            `M.clear_cache`({bufnr})
+Clear cache for a specific buffer
+Parameters ~
+{bufnr} `(number)`
+
+------------------------------------------------------------------------------
+                                                           *M.clear_all_cache()*
+                             `M.clear_all_cache`()
+Clear all cache
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                *M.merge_opts()*
+                             `M.merge_opts`({opts})
+Merge ts.nvim source into existing blink.cmp opts
+Use this as an opts function in lazy.nvim
+Parameters ~
+{opts} `(table)` Existing blink.cmp opts
+Return ~
+`(table)` Merged opts
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:
