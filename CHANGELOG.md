@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/justYu2001/ts.nvim/compare/v0.1.0...v0.2.0) (2026-01-20)
+
+
+### Features
+
+* auto-insert `<>` for generic types ([#3](https://github.com/justYu2001/ts.nvim/issues/3)) ([6999615](https://github.com/justYu2001/ts.nvim/commit/69996156ddd4a19cb35e41d2c310fdcc296680b2))
+
 ## [0.1.0](https://github.com/justYu2001/ts.nvim/compare/v0.0.0...v0.1.0) (2026-01-20)
 
 
