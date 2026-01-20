@@ -78,6 +78,9 @@ jobs:
           neovim: true
           version: ${{ matrix.neovim_version }}
 
+      - name: install tree-sitter-cli
+        run: npm install -g tree-sitter-cli
+
       - name: run luals
         run: |
           export PATH="${PWD}/.ci/lua-ls/bin:${PATH}"
@@ -122,6 +125,9 @@ jobs:
         with:
           neovim: true
           version: nightly
+
+      - name: install tree-sitter-cli
+        run: npm install -g tree-sitter-cli
 
       - name: run luals
         run: |
