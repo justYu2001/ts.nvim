@@ -66,6 +66,24 @@ function M.enable()
                 type_query.clear_cache(args.buf)
             end,
         })
+
+        vim.api.nvim_create_autocmd("CompleteDone", {
+            group = M.augroup,
+            pattern = { "*.ts", "*.tsx" },
+            callback = function()
+                local item = vim.v.completed_item
+
+                if not item or not item.word then
+                    return
+                end
+
+                vim.schedule(function()
+                    local generic_snippet = require("ts.auto-completion.generic_snippet")
+
+                    generic_snippet.handle_completion(item)
+                end)
+            end,
+        })
     end
 end
 
