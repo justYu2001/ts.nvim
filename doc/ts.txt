@@ -186,6 +186,55 @@ Return ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
+                                                         *M.count_type_params()*
+                      `M.count_type_params`({generic_str})
+Parameters ~
+{generic_str} `(string)` The content inside <...>
+Return ~
+`(number)`
+
+------------------------------------------------------------------------------
+                                                           *M.is_generic_type()*
+                         `M.is_generic_type`({detail})
+Parameters ~
+{detail} `(string|nil)` The detail field from LSP completion item
+Return ~
+`(boolean)` is_generic Whether this is a generic type
+Return ~
+`(number)` param_count Number of type parameters
+
+------------------------------------------------------------------------------
+                                                            *M.insert_snippet()*
+                       `M.insert_snippet`({param_count})
+Parameters ~
+{param_count} `(number)` Number of type parameters
+
+------------------------------------------------------------------------------
+                                                           *M.query_lsp_hover()*
+               `M.query_lsp_hover`({_word}, {bufnr}, {callback})
+Parameters ~
+{_word} `(string)` The completed word
+{bufnr} `(number)` Buffer number
+{callback} `(function)` Callback with detail string
+
+------------------------------------------------------------------------------
+                                                            *M.get_blink_item()*
+                           `M.get_blink_item`({word})
+Parameters ~
+{word} `(string)` The completed word
+Return ~
+`(table|nil)`
+
+------------------------------------------------------------------------------
+                                                         *M.handle_completion()*
+                    `M.handle_completion`({completed_item})
+Handle completion done event
+Parameters ~
+{completed_item} `(table)` The vim.v.completed_item
+
+
+==============================================================================
+------------------------------------------------------------------------------
                                                                          *Cache*
                                     `Cache`
 LRU Cache implementation
