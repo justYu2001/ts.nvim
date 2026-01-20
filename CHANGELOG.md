@@ -1,0 +1,8 @@
+# Changelog
+
+## [0.1.0](https://github.com/justYu2001/ts.nvim/compare/v0.0.0...v0.1.0) (2026-01-20)
+
+
+### Features
+
+* add context-aware completion for TypeScript utility types ([#1](https://github.com/justYu2001/ts.nvim/issues/1)) ([6daf44c](https://github.com/justYu2001/ts.nvim/commit/6daf44cce3ccc6cb7e40cdc145f852b85d0cf8ca))
