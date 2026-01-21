@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/justYu2001/ts.nvim/compare/v0.2.0...v0.2.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* filter generic snippet by LSP kind ([#5](https://github.com/justYu2001/ts.nvim/issues/5)) ([89075b1](https://github.com/justYu2001/ts.nvim/commit/89075b1fad866b8d6550b7b4041729bfafccc577))
+
 ## [0.2.0](https://github.com/justYu2001/ts.nvim/compare/v0.1.0...v0.2.0) (2026-01-20)
 
 
