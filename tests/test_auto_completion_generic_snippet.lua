@@ -325,6 +325,226 @@ end)()
 end
 
 -- ============================================================================
+-- Unit Tests: is_generic_type() with kind filtering
+-- ============================================================================
+T["is_generic_type() with kind"] = MiniTest.new_set()
+
+T["is_generic_type() with kind"]["accepts interface kind (8) with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("interface Array<T>", 8)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 1)
+end
+
+T["is_generic_type() with kind"]["accepts class kind (5) with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("class Promise<T>", 5)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 1)
+end
+
+T["is_generic_type() with kind"]["rejects function kind (3) even with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("function map<T>(arr: T[]): T[]", 3)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() with kind"]["rejects variable kind (6) even with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const arr: Array<string>", 6)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() with kind"]["rejects constant kind (21) even with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const map: Map<K, V>", 21)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() with kind"]["accepts TypeParameter kind (25) with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("type T<U>", 25)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 1)
+end
+
+T["is_generic_type() with kind"]["accepts enum kind (13) with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("enum Status<T>", 13)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 1)
+end
+
+-- ============================================================================
+-- Unit Tests: is_generic_type() fallback pattern matching
+-- ============================================================================
+T["is_generic_type() fallback patterns"] = MiniTest.new_set()
+
+T["is_generic_type() fallback patterns"]["rejects function declaration without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("function map<T>(arr: T[]): T[]", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects method with function keyword"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("(method) map<T>(fn: T): T", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects const declaration without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const arr: Array<string>", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects let declaration without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("let map: Map<K, V>", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects arrow function type without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const f: <T>() => T", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects inline generic function without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("type Factory = <T>() => T", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["accepts type definition without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("type Omit<T, K>", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 2)
+end
+
+-- ============================================================================
 -- Integration Tests: handle_completion()
 -- ============================================================================
 T["handle_completion()"] = MiniTest.new_set()
@@ -740,6 +960,128 @@ T["handle_completion()"]["edge cases"]["skips when detail is empty string (THE F
 
     -- Give async call time if it happens
     vim.wait(100)
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+-- ----------------------------------------------------------------------------
+-- Kind-based filtering integration tests
+-- ----------------------------------------------------------------------------
+T["handle_completion()"]["kind filtering"] = MiniTest.new_set()
+
+T["handle_completion()"]["kind filtering"]["accepts interface kind with generic detail"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "Array",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "interface Array<T>",
+                    kind = 8
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 1)
+    MiniTest.expect.equality(calls[1], 1)
+end
+
+T["handle_completion()"]["kind filtering"]["rejects function kind even with generic detail"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "map",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "function map<T>(arr: T[]): T[]",
+                    kind = 3
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+T["handle_completion()"]["kind filtering"]["rejects variable kind even with generic detail"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "arr",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "const arr: Array<string>",
+                    kind = 6
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+T["handle_completion()"]["kind filtering"]["uses fallback pattern when no kind available"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "map",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "function map<T>(arr: T[]): T[]"
+                    -- No kind field
+                }}}
+            }
+        })
+    ]])
 
     local calls = child.lua_get("_G.snippet_calls")
     MiniTest.expect.equality(#calls, 0)
