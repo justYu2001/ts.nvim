@@ -21,6 +21,7 @@ local function check_blink_cmp()
 end
 
 ---@param config table|nil Plugin configuration
+---@tag auto_completion.setup()
 function M.setup(config)
     -- Initialize cache with config
     type_query.init_cache(config and config.auto_completion or {})
@@ -104,6 +105,7 @@ function M.disable()
 end
 
 ---@return table|nil
+---@tag auto_completion.get_source()
 function M.get_source()
     if not check_blink_cmp() then
         return nil

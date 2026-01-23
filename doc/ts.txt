@@ -62,13 +62,13 @@ Module state
 Cached blink.cmp detection
 
 ------------------------------------------------------------------------------
-                                                                     *M.setup()*
+                                                       *auto_completion.setup()*
                               `M.setup`({config})
 Parameters ~
 {config} `(table|nil)` Plugin configuration
 
 ------------------------------------------------------------------------------
-                                                                *M.get_source()*
+                                                  *auto_completion.get_source()*
                                 `M.get_source`()
 Return ~
 `(table|nil)`
@@ -96,7 +96,7 @@ Fields ~
 {range} `(fun(self: TSNode): number,)` number, number, number
 
 ------------------------------------------------------------------------------
-                                                               *get_node_text()*
+                                                       *context.get_node_text()*
                         `get_node_text`({node}, {bufnr})
 Parameters ~
 {node} `(TSNode)`
@@ -351,6 +351,158 @@ Parameters ~
                                                            *M.clear_all_cache()*
                              `M.clear_all_cache`()
 Clear all cache
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                          *code_actions.setup()*
+                              `M.setup`({null_ls})
+Setup and register code action sources with null-ls
+Parameters ~
+{null_ls} `(table)`
+
+------------------------------------------------------------------------------
+                                                               *M.get_sources()*
+                           `M.get_sources`({null_ls})
+Get all code action sources
+Parameters ~
+{null_ls} `(table)`
+Return ~
+`(table)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                            *find_target_node()*
+                   `find_target_node`({bufnr}, {row}, {col})
+Find target class or object_type at cursor position
+Parameters ~
+{bufnr} `(number)`
+{row} `(number)`
+{col} `(number)`
+Return ~
+`(table|nil)` node
+Return ~
+`(string|nil)` node_type
+
+------------------------------------------------------------------------------
+                                             *extract_interface.get_node_text()*
+                        `get_node_text`({node}, {bufnr})
+Get text content of a node
+Parameters ~
+{node} `(table)`
+{bufnr} `(number)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                                             *extract_members()*
+                `extract_members`({node}, {node_type}, {bufnr})
+Extract members from class or object_type
+Parameters ~
+{node} `(table)`
+{node_type} `(string)`
+{bufnr} `(number)`
+Return ~
+`(table)` member_list
+
+------------------------------------------------------------------------------
+                                                            *extract_generics()*
+                      `extract_generics`({node}, {bufnr})
+Extract generic type parameters from node
+Parameters ~
+{node} `(table)`
+{bufnr} `(number)`
+Return ~
+`(string|nil)`
+
+------------------------------------------------------------------------------
+                                                               *detect_indent()*
+                        `detect_indent`({node}, {bufnr})
+Detect indentation of target node
+Parameters ~
+{node} `(table)`
+{bufnr} `(number)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                                   *find_containing_statement()*
+                `find_containing_statement`({object_type_node})
+Find containing statement for object_type node
+Parameters ~
+{object_type_node} `(table)`
+Return ~
+`(table|nil)`
+
+------------------------------------------------------------------------------
+                                                            *capitalize_first()*
+                           `capitalize_first`({str})
+Capitalize first letter, preserving camelCase structure
+Parameters ~
+{str} `(string)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                           *extract_identifier_from_statement()*
+           `extract_identifier_from_statement`({statement}, {bufnr})
+Extract identifier from statement node
+Parameters ~
+{statement} `(table)` TreeSitter node
+{bufnr} `(number)`
+Return ~
+`(string|nil)`
+
+------------------------------------------------------------------------------
+                                                       *is_function_parameter()*
+                  `is_function_parameter`({object_type_node})
+Check if object_type is in function parameter position
+Parameters ~
+{object_type_node} `(table)`
+Return ~
+`(boolean)`
+
+------------------------------------------------------------------------------
+                                                        *generate_placeholder()*
+              `generate_placeholder`({node}, {node_type}, {bufnr})
+Generate context-aware placeholder
+Parameters ~
+{node} `(table)` Target node (class or object_type)
+{node_type} `(string)` "class" or "object_type"
+{bufnr} `(number)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                                     *generate_interface_text()*
+   `generate_interface_text`({members}, {indent}, {generics}, {placeholder})
+Generate interface text from members
+Parameters ~
+{members} `(table)`
+{indent} `(string)`
+{generics} `(string|nil)`
+{placeholder} `(string)`
+Return ~
+`(string)`
+
+------------------------------------------------------------------------------
+                                                              *trigger_rename()*
+                 `trigger_rename`({row}, {col}, {placeholder})
+Trigger rename at specific position and move cursor to end after completion
+Parameters ~
+{row} `(number)` 0-indexed row
+{col} `(number)` 0-indexed column
+{placeholder} `(string)`
+
+------------------------------------------------------------------------------
+                                                *extract_interface.get_source()*
+                           `M.get_source`({null_ls})
+Get null-ls code action source
+Parameters ~
+{null_ls} `(table)`
+Return ~
+`(table)`
 
 
 ==============================================================================

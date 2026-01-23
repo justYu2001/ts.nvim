@@ -25,3 +25,27 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_user_command("Ts", function()
     require("ts").toggle()
 end, {})
+
+-- null-ls integration (optional)
+vim.api.nvim_create_autocmd("User", {
+    pattern = "VeryLazy",
+    once = true,
+    callback = function()
+        local ok, null_ls = pcall(require, "null-ls")
+        if ok then
+            require("ts.code-actions").setup(null_ls)
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    once = true,
+    callback = function()
+        vim.schedule(function()
+            local ok, null_ls = pcall(require, "null-ls")
+            if ok then
+                require("ts.code-actions").setup(null_ls)
+            end
+        end)
+    end,
+})

@@ -13,6 +13,7 @@ M.UTILITY_TYPES = { "Omit", "Exclude", "Extract" }
 ---@param node TSNode
 ---@param bufnr number
 ---@return string
+---@tag context.get_node_text()
 local function get_node_text(node, bufnr)
     if not node then
         return ""
