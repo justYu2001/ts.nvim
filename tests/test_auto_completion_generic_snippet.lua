@@ -344,13 +344,13 @@ end)()
     MiniTest.expect.equality(result.count, 1)
 end
 
-T["is_generic_type() with kind"]["accepts class kind (5) with generics"] = function()
+T["is_generic_type() with kind"]["accepts class kind (7) with generics"] = function()
     child.lua([[require('ts').setup()]])
 
     local result = child.lua_get([[
 (function()
     local gs = require("ts.auto-completion.generic_snippet")
-    local is_generic, count = gs.is_generic_type("class Promise<T>", 5)
+    local is_generic, count = gs.is_generic_type("class Promise<T>", 7)
     return {is_generic = is_generic, count = count}
 end)()
     ]])
@@ -432,6 +432,36 @@ end)()
 
     MiniTest.expect.equality(result.is_generic, true)
     MiniTest.expect.equality(result.count, 1)
+end
+
+T["is_generic_type() with kind"]["rejects field kind (5) even with generics"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("(property) queryFn?: QueryFunction<T, K>", 5)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() with kind"]["rejects function type signature with kind 6"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const setCount: (value: React.SetStateAction<number>) => void", 6)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
 end
 
 -- ============================================================================
@@ -521,6 +551,52 @@ T["is_generic_type() fallback patterns"]["rejects inline generic function withou
 (function()
     local gs = require("ts.auto-completion.generic_snippet")
     local is_generic, count = gs.is_generic_type("type Factory = <T>() => T", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects function type signature without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("const setCount: (value: React.SetStateAction<number>) => void", nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["strips markdown and rejects const with generic type"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local detail = "```typescript\nconst setCount: React.Dispatch<React.SetStateAction<number>>\n```"
+    local is_generic, count = gs.is_generic_type(detail, nil)
+    return {is_generic = is_generic, count = count}
+end)()
+    ]])
+
+    MiniTest.expect.equality(result.is_generic, false)
+    MiniTest.expect.equality(result.count, 0)
+end
+
+T["is_generic_type() fallback patterns"]["rejects property with generic type without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    local result = child.lua_get([[
+(function()
+    local gs = require("ts.auto-completion.generic_snippet")
+    local is_generic, count = gs.is_generic_type("(property) queryFn?: QueryFunction<T, K>", nil)
     return {is_generic = is_generic, count = count}
 end)()
     ]])
@@ -1078,6 +1154,92 @@ T["handle_completion()"]["kind filtering"]["uses fallback pattern when no kind a
                 nvim = { lsp = { completion_item = {
                     detail = "function map<T>(arr: T[]): T[]"
                     -- No kind field
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+T["handle_completion()"]["kind filtering"]["rejects field kind with generic property"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "queryFn",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "(property) queryFn?: QueryFunction<T, K>",
+                    kind = 5
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+T["handle_completion()"]["kind filtering"]["rejects function type signature with variable kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "setCount",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "const setCount: (value: React.SetStateAction<number>) => void",
+                    kind = 6
+                }}}
+            }
+        })
+    ]])
+
+    local calls = child.lua_get("_G.snippet_calls")
+    MiniTest.expect.equality(#calls, 0)
+end
+
+T["handle_completion()"]["kind filtering"]["rejects function type signature without kind"] = function()
+    child.lua([[require('ts').setup()]])
+
+    child.lua([[
+        _G.snippet_calls = {}
+        local gs = require("ts.auto-completion.generic_snippet")
+        local original = gs.insert_snippet
+        gs.insert_snippet = function(param_count)
+            table.insert(_G.snippet_calls, param_count)
+        end
+    ]])
+
+    child.lua([[
+        local gs = require("ts.auto-completion.generic_snippet")
+        gs.handle_completion({
+            word = "setCount",
+            user_data = {
+                nvim = { lsp = { completion_item = {
+                    detail = "const setCount: (value: React.SetStateAction<number>) => void"
                 }}}
             }
         })

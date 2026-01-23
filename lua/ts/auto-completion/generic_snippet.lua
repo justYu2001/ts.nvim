@@ -28,6 +28,13 @@ function M.is_generic_type(detail, kind)
         return false, 0
     end
 
+    -- Strip markdown code fences from LSP hover responses
+    -- Pattern: extract content between ```lang and ```
+    local stripped = detail:match("```%w*\n(.-)```")
+    if stripped then
+        detail = stripped
+    end
+
     -- Skip import contexts - LSP hover for imports contains "import" keyword
     if detail:match("%simport%s") or detail:match("^import%s") or detail:match("%simport$") then
         return false, 0
@@ -36,20 +43,30 @@ function M.is_generic_type(detail, kind)
     -- If kind available, filter by type-related kinds only
     if kind then
         -- LSP CompletionItemKind enum values:
-        -- Class = 5, Interface = 8, Enum = 13, TypeParameter = 25
-        -- Struct = 23 (for TS namespaces/modules)
-        -- Reject: Function = 3, Variable = 6, Constant = 21
+        -- Class = 7, Interface = 8, Enum = 13, TypeParameter = 25
+        -- Struct = 22 (for TS namespaces/modules)
+        -- Reject: Function = 3, Field = 5, Variable = 6, Constant = 21
         local allowed_kinds = {
-            [5] = true, -- Class
+            [7] = true, -- Class
             [8] = true, -- Interface
             [13] = true, -- Enum
-            [23] = true, -- Struct
+            [22] = true, -- Struct
             [25] = true, -- TypeParameter
         }
 
         if not allowed_kinds[kind] then
             return false, 0
         end
+    end
+
+    -- Exclude function type signatures: "const f: (x: T) => U"
+    if detail:match(":%s*%(.*%)%s*=>") then
+        return false, 0
+    end
+
+    -- Exclude variable declarations: "const arr: Array<T>"
+    if detail:match("^const%s") or detail:match("^let%s") or detail:match("^var%s") then
+        return false, 0
     end
 
     -- Fallback: exclude function/variable patterns if no kind available
@@ -59,13 +76,13 @@ function M.is_generic_type(detail, kind)
             return false, 0
         end
 
-        -- Exclude method declarations: "(method) map<T>(...)"
-        if detail:match("^%(method%)") then
-            return false, 0
-        end
-
-        -- Exclude variable declarations: "const arr: Array<T>"
-        if detail:match("^const%s") or detail:match("^let%s") or detail:match("^var%s") then
+        -- Exclude method/property declarations: "(method) map<T>(...)", "(property) foo: Bar<T>"
+        if
+            detail:match("^%(method%)")
+            or detail:match("^%(property%)")
+            or detail:match("%(method%)")
+            or detail:match("%(property%)")
+        then
             return false, 0
         end
 
