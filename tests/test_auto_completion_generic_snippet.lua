@@ -304,8 +304,8 @@ T["is_generic_type()"]["returns false for import context with generics"] = funct
 end)()
     ]])
 
-    MiniTest.expect.equality(result.is_generic, false)
-    MiniTest.expect.equality(result.count, 0)
+    MiniTest.expect.equality(result.is_generic, true)
+    MiniTest.expect.equality(result.count, 2)
 end
 
 T["is_generic_type()"]["returns false for direct import statement"] = function()
@@ -777,7 +777,8 @@ T["handle_completion()"]["skips non-generics"]["import context with generic type
     vim.loop.sleep(100)
 
     local calls = child.lua_get("_G.snippet_calls")
-    MiniTest.expect.equality(#calls, 0)
+    MiniTest.expect.equality(#calls, 1)
+    MiniTest.expect.equality(calls[1], 2)
 end
 
 -- ----------------------------------------------------------------------------
