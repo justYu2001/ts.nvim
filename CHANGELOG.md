@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/justYu2001/ts.nvim/compare/v0.2.1...v0.2.2) (2026-01-31)
+
+
+### Bug Fixes
+
+* exclude hooks and object properties from &lt;&gt; insertion ([#7](https://github.com/justYu2001/ts.nvim/issues/7)) ([ed64483](https://github.com/justYu2001/ts.nvim/commit/ed64483e2f1184be9fc0052e7ea11e6a708fd2b2))
+* import handling for `<>` insertion ([#9](https://github.com/justYu2001/ts.nvim/issues/9)) ([662a3c3](https://github.com/justYu2001/ts.nvim/commit/662a3c35a7faf1a4800b2eebea136045780f5459))
+
 ## [0.2.1](https://github.com/justYu2001/ts.nvim/compare/v0.2.0...v0.2.1) (2026-01-21)
 
 
