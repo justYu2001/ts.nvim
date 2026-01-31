@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 1
     strategy:
       matrix:
-        neovim_version: ['v0.11.5']
+        neovim_version: ['v0.11.6']
 
     steps:
       - uses: actions/checkout@v4
