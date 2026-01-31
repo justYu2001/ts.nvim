@@ -36,7 +36,12 @@ function M.is_generic_type(detail, kind)
     end
 
     -- Skip import contexts - LSP hover for imports contains "import" keyword
-    if detail:match("%simport%s") or detail:match("^import%s") or detail:match("%simport$") then
+    -- But allow if detail contains type/interface/class definition (has <...>)
+    local has_import = detail:match("%simport%s")
+        or detail:match("^import%s")
+        or detail:match("%simport$")
+    local has_generic_brackets = detail:match("<.*>")
+    if has_import and not has_generic_brackets then
         return false, 0
     end
 
@@ -222,6 +227,12 @@ function M.handle_completion(completed_item)
     end
 
     local word = completed_item.word
+
+    -- Check if we're in an import statement
+    local line = vim.api.nvim_get_current_line()
+    if line:match("^%s*import%s") or line:match("^%s*export%s.*from%s") then
+        return
+    end
 
     -- Skip primitive types that should never have generics
     local primitives = {
